@@ -12,6 +12,20 @@
   pointer-events: none;
 }
 
+.history {
+  margin-top: 2em;
+  display: flex;
+  flex-direction: column;
+}
+.history button {
+  margin: 0.2em;
+  padding: 0.5em;
+  border-radius: 0.5em;
+  font-size: 1em;
+  cursor: pointer;
+  width: 15em;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

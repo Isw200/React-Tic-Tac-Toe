@@ -17,6 +17,8 @@ function App() {
 
   const [board, setBoard] = useState(Array(9).fill(null));
   const [isXNext, setIsXNext] = useState(true);
+  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [moveButtons, setMoveButtons] = useState([]);
 
   const handleButtonclick = (index) => {
     const newBoard = board.map((value, i) => {
@@ -28,10 +30,40 @@ function App() {
     });
     setBoard(newBoard);
 
+    history.push(newBoard);
+    // console.log(history);
+    // console.log(history.length);
+
+    // add history buttons
+    // setMoveButtons(...moveButtons, <HistoryBtn onClick={null} />);
+
+    const addButton = () => {
+      const newButton = { label: "Undo move No " + moveButtons.length };
+      setMoveButtons([...moveButtons, newButton]);
+    };
+
+    addButton();
+
     checkWinner(newBoard);
 
     setIsXNext(!isXNext);
   };
+
+  const resetGame = () => {
+    setBoard(Array(9).fill(null));
+    setIsXNext(true);
+    setHistory([Array(9).fill(null)]);
+  };
+
+  // undo moves
+  function moveBack(index) {
+    console.log("moveBack", index);
+    setBoard(history[index]);
+    setIsXNext(index % 2 === 0);
+
+    // remove history buttons
+    setMoveButtons(moveButtons.slice(0, index));
+  }
 
   const checkWinner = (board) => {
     WINNING_COMBINATIONS.forEach((combination) => {
@@ -44,13 +76,20 @@ function App() {
         return;
       }
     });
-  }; 
+  };
 
   return (
     <div className="App">
       <h1>Tic Tac Toe</h1>
       <h2>Next Player: {isXNext ? "X" : "O"}</h2>
       <Board board={board} onClick={handleButtonclick} />
+      <div className="history">
+        {moveButtons.map((button, i) => (
+          <button key={i} onClick={() => console.log(moveBack(i))}>
+            {button.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
