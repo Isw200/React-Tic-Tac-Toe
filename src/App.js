@@ -1,6 +1,9 @@
 import "./App.css";
 import Board from "./components/Board";
 
+// ES6 Modules or TypeScript
+import Swal from "sweetalert2";
+
 import { useState } from "react";
 
 function App() {
@@ -30,18 +33,14 @@ function App() {
     });
     setBoard(newBoard);
 
+    // add current board to history
     history.push(newBoard);
-    // console.log(history);
-    // console.log(history.length);
 
-    // add history buttons
-    // setMoveButtons(...moveButtons, <HistoryBtn onClick={null} />);
-
+    // add history button
     const addButton = () => {
       const newButton = { label: "Undo move No " + moveButtons.length };
       setMoveButtons([...moveButtons, newButton]);
     };
-
     addButton();
 
     checkWinner(newBoard);
@@ -49,10 +48,31 @@ function App() {
     setIsXNext(!isXNext);
   };
 
+  const wonMessage = (winner) => {
+    const title = winner === "Nobody" ? "It's a tie!" : `Player ${winner} won!`;
+    const icon = winner === "Nobody" ? "info" : "success";
+    Swal.fire({
+      title: title,
+      text: "You can reset the game or undo your moves.",
+      icon: icon,
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, undo moves!",
+      cancelButtonText: "No, reset game!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+      } else {
+        resetGame();
+      }
+    });
+  };
+
   const resetGame = () => {
     setBoard(Array(9).fill(null));
     setIsXNext(true);
     setHistory([Array(9).fill(null)]);
+    setMoveButtons([]);
   };
 
   // undo moves
@@ -70,9 +90,9 @@ function App() {
       const [a, b, c] = combination;
 
       if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-        alert(`${board[a]} is the winner`);
+        wonMessage(board[a]);
       } else if (!board.includes(null)) {
-        alert("It's a tie");
+        wonMessage("Nobody");
         return;
       }
     });
@@ -84,6 +104,7 @@ function App() {
       <h2>Next Player: {isXNext ? "X" : "O"}</h2>
       <Board board={board} onClick={handleButtonclick} />
       <div className="history">
+        <button onClick={resetGame}>Reset Game</button>
         {moveButtons.map((button, i) => (
           <button key={i} onClick={() => console.log(moveBack(i))}>
             {button.label}
